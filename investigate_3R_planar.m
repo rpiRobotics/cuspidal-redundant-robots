@@ -75,3 +75,29 @@ zlabel("q_1")
 xlabel("q_2")
 ylabel("\rho")
 view(107, 13)
+
+%% What happens with prismatic joint 1?
+
+
+zv = [0;0;0];
+ex = [1;0;0];
+ey = [0;1;0];
+ez = [0;0;1];
+
+kin.H = [ey ez];
+kin.P = [zv 3*ex ex];
+kin.joint_type = [1 0];
+L_3T = 0.25
+
+syms q1 q2 X real
+
+[~, P] = fwdkin(kin, [q1; q2])
+d_3T = P-X*ex
+E = d_3T'*d_3T == L_3T^2
+
+syms x y z
+fimplicit3(subs(E,[q1 q2 X], [z x y]), [-5 5  0 5 -pi pi], MeshDensity=85, LineWidth=0.1)
+zlabel("q_1")
+xlabel("q_2")
+ylabel("\rho")
+view(107, 13)
