@@ -3,7 +3,7 @@
 
 kin_7 = define_yumi;
 
-kin = fwdkin_partial(kin_7, pi/2, 3);
+kin = fwdkin_partial(kin_7, pi/3, 3);
 
 [R, p] = fwdkin(kin, zeros([6 1]));
 
@@ -15,7 +15,7 @@ Q = IK.IK_4_6_intersecting(R, p, kin)
 
 % Random pose
 
-% q = rand_angle([6 1]); % [ 1.7871   -1.3096    0.6505    2.9181   -0.4242    1.2237]
+% q = rand_angle([6 1]);
 q = [ 1.7871   -1.3096    0.6505    2.9181   -0.4242    1.2237]'
 [R, p] = fwdkin(kin, q);
 
@@ -177,3 +177,46 @@ colormap hsv
 xlabel("q_1")
 ylabel("q_2")
 axis tight
+
+
+
+%% Find det(J) path for all possible q_i parameterizations
+
+q = rand_angle([6 1]);
+% q = [ 1.7871   -1.3096    0.6505    2.9181   -0.4242    1.2237]'
+[R, p] = fwdkin(kin, q);
+
+% All IK solns
+Q = IK.IK_4_6_intersecting(R, p, kin);
+
+q_A = Q(:,randi(width(Q)));
+q_B = Q(:,randi(width(Q)));
+
+
+N = 100;
+lambda = linspace(0, 1,  N);
+q_path = lambda.*q_B + (1-lambda).*q_A;
+det_paths = NaN(7,N);
+for i = 1:N
+    J = robotjacobian(kin_7, [q_path(1:2,i); pi/2 ;q_path(3:end,i)]);
+    det_paths(1,i) = det(J(:, [  2 3 4 5 6 7]));
+    det_paths(2,i) = det(J(:, [1   3 4 5 6 7]));
+    det_paths(3,i) = det(J(:, [1 2   4 5 6 7]));
+    det_paths(4,i) = det(J(:, [1 2 3   5 6 7]));
+    det_paths(5,i) = det(J(:, [1 2 3 4   6 7]));
+    det_paths(6,i) = det(J(:, [1 2 3 4 5   7]));
+    det_paths(7,i) = det(J(:, [1 2 3 4 5 6  ]));
+end
+
+plot(lambda, det_paths')
+xlabel("\lambda")
+ylabel("det(J)")
+yline(0)
+legend(string(1:7))
+
+%% Confirm q_A and q_B lead to same EE pose
+
+[R_A, p_A] = fwdkin(kin, q_A)
+[R_B, p_B] = fwdkin(kin, q_B)
+
+[R_A p_A] - [R_B p_B]
