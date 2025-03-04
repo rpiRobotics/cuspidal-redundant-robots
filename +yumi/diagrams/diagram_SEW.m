@@ -29,7 +29,7 @@ diagrams.text(rot(ez, -3*pi/4)*ex, "$\psi = \frac{-3\pi}{4}$", horizontalAlignme
 diagrams.text(rot(ez, pi/4)*ex, "$\psi = \frac{\pi}{4}$", horizontalAlignment = 'left', margin=10, color=diagrams.colors.dark_green);
 diagrams.text(ez, "$e_r$");
 diagrams.text(ex, "$e_x$", verticalAlignment="bottom", horizontalAlignment="right");
-diagrams.text(rot(ex, pi/6)*ez, "$\frac{p_{0W}}{||p_{0W}||}$", verticalAlignment="bottom", horizontalAlignment="right");
+diagrams.text(rot(ex, pi/6)*ez, "$e_{SW}$", verticalAlignment="bottom", horizontalAlignment="center", margin=0);
 
 view(30, 30)
 diagrams.redraw(); hold off

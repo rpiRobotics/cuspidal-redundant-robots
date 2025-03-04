@@ -130,7 +130,40 @@ SEW = yumi.sew_abb();
 SEW.jacobian(kin, q) * direction
 
 %%
+clc
 q = rand_angle([7 1]);
-q(3) = 0;
+% q(3) = 0;
+q(2) = pi
+% q(3) = 1e-10;
 SEW.fwd_kin(kin, q)
-SEW.jacobian(kin, q)
+[J_psi, sign_term] = SEW.jacobian(kin, q)
+
+%% TODO put into RS correctly (separate axis for 7)
+% q = deg2rad([0
+% -43.52
+% -6.71
+% 7.04
+% 285
+% 138
+% 116
+% ])
+
+q = rand_angle([7 1])
+
+q(2) = -1e-15
+
+rad2deg(SEW.fwd_kin(kin, q))
+[R, T] = fwdkin(kin, q)
+
+%% Investigate q_A
+clc
+q = rand_angle([7 1]);
+q(6)=0;
+
+J = robotjacobian(kin,q);
+[J_psi, sign_term_i] = SEW.jacobian(kin, q)
+J_A = [J; J_psi];
+
+det_i = det(J_A)
+psi = SEW.fwd_kin(kin, q)
+sign_term = sign_term_i

@@ -9,7 +9,8 @@ p_17 = p_0W - kin.P(:,1);
 
 [e_r, e_x] = SEW_abb_class.inv_kin(p_0W, psi);
 
-[q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, -pi, pi, -pi, pi, 1000, false);
+%[q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, -pi, pi, -pi, pi, 500, false);
+[q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, -2.9409, 2.9409, -2.5045, 0.7592, 1000, false); % Use joint limits
 
 for i = 1:length(q1_vec)
     [~, Q123_567] = q4_solvability_given_q12(q1_vec(i), q2_vec(i));
