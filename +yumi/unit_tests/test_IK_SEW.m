@@ -1,10 +1,10 @@
 kin = define_yumi;
-kin.P(:,1) = [0;0;140];
-kin.P(:,end) = [36;0;0];
-SEW = yumi.sew_abb();
+% e_r = rand_normal_vec;
+e_r = [0;0;1];
+SEW = yumi.sew_abb(e_r);
 
-% q = rand_angle([7 1]);
-q = (1:7)'/10
+q = rand_angle([7 1]);
+% q = (1:7)'/10
 
 [R_07, p_0T] = fwdkin(kin, q)
 psi = SEW.fwd_kin(kin, q)

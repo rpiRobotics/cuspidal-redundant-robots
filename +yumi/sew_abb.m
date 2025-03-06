@@ -10,7 +10,7 @@ classdef sew_abb
             obj.e_r = e_r;
         end
 
-        function [psi, p_0W, e_x, h_4_0] = fwd_kin(obj, kin, q)
+        function [psi, p_SW, e_x, h_4_0] = fwd_kin(obj, kin, q)
             h_4_0 = rot(kin.H(:,1), q(1)) * rot(kin.H(:,2), q(2)) * rot(kin.H(:,3), q(3)) * kin.H(:,4);
             [~, ~, p_0W] = fwdkin_inter(kin, q, 7);
 
@@ -70,7 +70,7 @@ classdef sew_abb
         end
 
         function [J_psi, sign_term] = jacobian(obj, kin, q)
-            [~, p_0W, e_x, h_4_0] = fwd_kin(obj, kin, q);
+            [~, p_SW, e_x, h_4_0] = fwd_kin(obj, kin, q);
 
             % Jacobian of p_0W wrt q
             kin_W = kin;
@@ -86,7 +86,7 @@ classdef sew_abb
             J_h4 = [J_E_full(4:6, :) zeros(3, 4)];
 
             % Jacobian of e_x wrt p_0W
-            J_x_W = obj.jacobian_x_W(obj.e_r, p_0W, e_x);
+            J_x_W = obj.jacobian_x_W(obj.e_r, p_SW, e_x);
 
 
             alpha = -sign(dot(h_4_0, obj.e_r)) / norm(cross(e_x, h_4_0));
@@ -105,9 +105,9 @@ classdef sew_abb
         end
 
         % Jacobian of e_x wrt p_0W
-        function J_x_W = jacobian_x_W(obj, e_r, p_0W, e_x)
+        function J_x_W = jacobian_x_W(obj, e_r, p_SW, e_x)
             num = cross(e_r, e_x)* e_x';
-            den = norm(cross(e_r, e_x)'* p_0W);
+            den = norm(cross(e_r, e_x)'* p_SW);
             J_x_W = num/den;
         end
 
