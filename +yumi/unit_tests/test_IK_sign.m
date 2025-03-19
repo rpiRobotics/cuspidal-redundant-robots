@@ -1,7 +1,7 @@
 kin = define_yumi;
 % e_r = rand_normal_vec;
 e_r = [0;0;1];
-SEW = yumi.sew_abb(e_r);
+SEW = yumi.sew_sign(e_r);
 
 q = rand_angle([7 1]);
 % q = (1:7)'/10
@@ -9,11 +9,11 @@ q = rand_angle([7 1]);
 [R_07, p_0T] = fwdkin(kin, q)
 psi = SEW.fwd_kin(kin, q)
 %% 
-[Q, is_LS_vec] = yumi.IK_SEW_ABB(R_07, p_0T, SEW, psi, kin)
+[Q, is_LS_vec] = yumi.IK_SEW_sign(R_07, p_0T, SEW, psi, kin)
 %%
-codegen +yumi/IK_SEW_ABB.m -args {R_07, p_0T, SEW, psi, kin}
+codegen +yumi/IK_SEW_sign.m -args {R_07, p_0T, SEW, psi, kin}
 %%
-[Q, is_LS_vec] = yumi.IK_SEW_ABB_mex(R_07, p_0T, SEW, psi, kin)
+[Q, is_LS_vec] = yumi.IK_SEW_sign_mex(R_07, p_0T, SEW, psi, kin)
 %%
 chi = [R_07(:); p_0T; psi];
 chi_Q = NaN(13, width(Q));

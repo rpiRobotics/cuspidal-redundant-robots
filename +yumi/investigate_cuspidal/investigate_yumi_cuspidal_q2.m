@@ -2,7 +2,7 @@
 kin_7 = define_yumi;
 
 kin = fwdkin_partial(kin_7, pi/3, 2);
-kin.P = kin.P / 100; % fix scaling for det(J)
+% kin.P = kin.P / 100; % fix scaling for det(J)
 
 [R, p] = fwdkin(kin, zeros([6 1]));
 

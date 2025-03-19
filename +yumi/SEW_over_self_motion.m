@@ -13,15 +13,13 @@ Q_path = NaN([6 16 N]);
 
 for i = 1:N
 
-    kin_i = fwdkin_partial(kin, q1_list(i), 1);
-
-    Q = IK.IK_4_6_intersecting_mex(R, p, kin_i); %% TODO make sure to use R_7T
+    Q = yumi.IK_given_q1(R, p, kin, q1_list(i));
     if ~isempty(Q)
-        Q_path(:, 1:width(Q), i) = Q;
+        Q_path(:, 1:width(Q), i) = Q(2:end, :);
     end
 
 end
-%
+%%
 Q_path_filter = yumi.filter_Q_joint_limits(Q_path, q_min(2:7), q_max(2:7));
 q2_list = squeeze(Q_path_filter(1,:,:)); % since q is q2 through q7
 plot(q1_list, q2_list', '.')
@@ -72,7 +70,7 @@ for i = 1:N
 end
 
 
-%% Plot parameterizations over path
+% Plot parameterizations over path
 
 plot(q1_list, q1_list); hold on
 plot(q1_list, q2_list_extract);
@@ -89,10 +87,10 @@ legend('q_1', 'q_2', '\psi^{ABB}', 'sign term', '\psi^{conv}','','', Location='s
 xlabel("\lambda")
 ylim([-pi pi])
 xlim([-pi, pi])
-xline(q1_list(85));
+xline(q1_list(i_disp));
 
 %% Print out one of the joint angles
-i_disp=75;
+i_disp=79;
 q_disp = Q7_path(:,i_disp);
 
 q_ABB_deg = yumi.q2ABB(rad2deg(q_disp));
@@ -100,7 +98,7 @@ q_ABB_deg(1:6)
 q_ABB_deg(7)
 %%
 
-[R_t, T_t] = fwdkin(kin, Q7_path(:,85))
+[R_t, T_t] = fwdkin(kin, Q7_path(:,i_disp))
 
-% rad2deg(SEW.fwd_kin(kin, q_disp))
-% rad2deg(psi_conv_path(:,i_disp))
+rad2deg(SEW.fwd_kin(kin, q_disp))
+rad2deg(psi_conv_path(:,i_disp))
