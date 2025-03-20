@@ -378,14 +378,6 @@ RPY_1 = [R_1; P_1; Y_1];
 RPY_2 = [R_2; P_2; Y_2];
 end
 
-
-function psi = SEW_conv_fwd_kin(q, kin, e_r)
-    SEW_conv = sew_conv(e_r);
-    [~, ~, P_SEW] = fwdkin_inter(kin, q, [1 4 7]);
-    psi = SEW_conv.fwd_kin(P_SEW(:,1), P_SEW(:,2), P_SEW(:,3));
-end
-
-
 function psi = SEW_conv_h4_fwd_kin(q, kin, e_r)
     SEW_conv = sew_conv(e_r);
     [~, ~, P_SEW] = fwdkin_inter(kin, q, [1 4 7]);

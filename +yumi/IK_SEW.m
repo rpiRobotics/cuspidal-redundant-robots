@@ -1,23 +1,28 @@
-function [Q, is_LS_vec] = IK_SEW_sign(R_07, p_0T, SEW_sign_class, psi, kin)
-% 2D search-based IK for ABB YuMi using definition from
-% "Singularities of ABB's YuMi 7-DOF robot arm" by
-% M. Asgari, I.A. Bonev, and C. Gosselin.
+function [Q, is_LS_vec] = IK_SEW(R_07, p_0T, SEW_class, psi, kin, show_graph)
+% 2D search-based IK for for ABB YuMi using h_4 SEW angle definition
+% Almost the same as SEW_IK.IK_gen_7_dof.m
+% But uses R_03 h_4 rather than p_04 for elbow direction
 %
-% This definition does NOT match the definition used by ABB in RobotStudio
-
+% This definition matches the the angle used by ABB in RobotStudio
+if nargin < 6
+    show_graph = false;
+end
 
 Q = [];
 is_LS_vec = [];
 
 % Find wrist position
-p_0W = p_0T - R_07 * kin.P(:,8);
+W = p_0T - R_07 * kin.P(:,8);
 
-p_17 = p_0W - kin.P(:,1);
+% Find shoulder position
+S = kin.P(:,1);
 
-[e_r, e_x] = SEW_sign_class.inv_kin(p_17);
+p_17 = W - S;
+% e_SW = p_17 / norm(p_17);
 
-[q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, -pi, pi, -pi, pi, 500, false);
-% [q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, -2.9409, 2.9409, -2.5045, 0.7592, 1000, false); % Use joint limits
+[e_CE, n_SEW] = SEW_class.inv_kin(S, W, psi);
+
+[q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, -pi, pi, -pi, pi, 1000, show_graph);
 
 for i = 1:length(q1_vec)
     [~, Q123_567] = q4_solvability_given_q12(q1_vec(i), q2_vec(i));
@@ -36,9 +41,7 @@ function [e, Q123_567] =  q4_solvability_given_q12(q1, q2)
     R_02 = R_01 * R_12;
 
     % Find q3 with Subproblem 4
-    % Later, only keep q3 which places R_03 h_4 in the right half-circle
-    [t3, t3_is_LS] = subproblem.sp_4(R_02'*e_x, kin.H(:,4), kin.H(:,3), cos(psi));
-
+    [t3, t3_is_LS] = subproblem.sp_4(R_02'*n_SEW, kin.H(:,4), kin.H(:,3), 0);
     if t3_is_LS
         return
     end
@@ -52,9 +55,10 @@ function [e, Q123_567] =  q4_solvability_given_q12(q1, q2)
         R_23 = rot(kin.H(:,3), q3);
         R_03 = R_02 * R_23;
         p_14 = R_01*kin.P(:,2) + R_02*kin.P(:,3) + R_03*kin.P(:,4);
+        h_04_0 = R_03 * kin.H(:,4);
 
-        % Check for correct half circle
-        if sign(e_r'* R_03*kin.H(:,4)) * sign(psi) < 0
+        % Check for correct half plane
+        if e_CE' * h_04_0 < 0
             continue
         end
         

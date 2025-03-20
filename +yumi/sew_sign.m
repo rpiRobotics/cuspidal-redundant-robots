@@ -1,5 +1,9 @@
-classdef sew_abb
-    % SEW angle used by ABB for YuMi
+classdef sew_sign
+% SEW angle for ABB YuMi using definition from
+% "Singularities of ABB's YuMi 7-DOF robot arm" by
+% M. Asgari, I.A. Bonev, and C. Gosselin.
+%
+% This definition does NOT match the definition used by ABB in RobotStudio
 
     properties
         e_r
