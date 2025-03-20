@@ -1,35 +1,41 @@
-for i = 1:1e4
-
 [kin, q_min, q_max] = define_yumi;
-% e_r = rand_normal_vec;
-e_r = [0;0;1];
+
+for i = 1:1e4
+e_r = rand_normal_vec;
+% e_r = [0;0;1];
+% e_r = [0;1;0];
 SEW = yumi.sew_conv_h4(e_r);
 
-q = rand_angle([7 1]);
+% q = rand_angle([7 1]);
 % q = (1:7)'/10
-% q = q_min + rand([7 1]).*(q_max - q_min);
+q = q_min + rand([7 1]).*(q_max - q_min);
 
 [R_07, p_0T] = fwdkin(kin, q);
 
 
 psi = SEW.fwd_kin_q(q, kin);
 
-[Q, is_LS_vec] = yumi.IK_SEW_mex(R_07, p_0T, SEW, psi, kin);
-% Q_filter = unique_q_tol(yumi.filter_Q_joint_limits(Q, q_min, q_max, mode='remove'), 1e-4);
-Q_filter = unique_q_tol(Q, 1e-4);
-if width(Q_filter) > 15
+[Q, is_LS_vec] = yumi.IK_SEW_mex(R_07, p_0T, SEW, psi, kin, false, 500);
+% Q_filter = unique_q_tol(yumi.filter_Q_joint_limits(Q, q_min, q_max, mode='remove'), 1e-5);
+% Q_filter = unique_q_tol(Q, deg2rad(0.01), "infinity");
+Q_filter = unique_q_tol(yumi.filter_Q_joint_limits(Q, q_min, q_max, mode='remove'), deg2rad(0.01), "infinity");
+if width(Q_filter) > 8
     beep;
     disp("found it")
     Q_filter
+    width(Q_filter)
     break
 end
 
 disp(i)
+% if mod(i, 10) == 0
+%     disp(i)
+% end
 end
 %%
 [Q, is_LS_vec] = yumi.IK_SEW(R_07, p_0T, SEW, psi, kin)
 %%
-codegen +yumi/IK_SEW.m -args {R_07, p_0T, SEW, psi, kin}
+codegen +yumi/IK_SEW.m -args {R_07, p_0T, SEW, psi, kin, false, 100}
 %%
 [Q, is_LS_vec] = yumi.IK_SEW_mex(R_07, p_0T, SEW, psi, kin)
 %%

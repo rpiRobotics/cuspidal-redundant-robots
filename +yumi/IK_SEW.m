@@ -1,11 +1,22 @@
-function [Q, is_LS_vec] = IK_SEW(R_07, p_0T, SEW_class, psi, kin, show_graph)
+function [Q, is_LS_vec] = IK_SEW(R_07, p_0T, SEW_class, psi, kin, show_graph, samples, q1_min, q1_max, q2_min, q2_max)
 % 2D search-based IK for for ABB YuMi using h_4 SEW angle definition
 % Almost the same as SEW_IK.IK_gen_7_dof.m
 % But uses R_03 h_4 rather than p_04 for elbow direction
 %
 % This definition matches the the angle used by ABB in RobotStudio
-if nargin < 6
-    show_graph = false;
+
+arguments
+    R_07
+    p_0T
+    SEW_class
+    psi
+    kin
+    show_graph = false
+    samples = 1000
+    q1_min = -pi
+    q1_max = pi
+    q2_min = -pi
+    q2_max = pi
 end
 
 Q = [];
@@ -22,7 +33,7 @@ p_17 = W - S;
 
 [e_CE, n_SEW] = SEW_class.inv_kin(S, W, psi);
 
-[q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, -pi, pi, -pi, pi, 1000, show_graph);
+[q1_vec, q2_vec, soln_num_vec] = search_2D(@q4_solvability_given_q12, q1_min, q1_max, q2_min, q2_max, samples, show_graph);
 
 for i = 1:length(q1_vec)
     [~, Q123_567] = q4_solvability_given_q12(q1_vec(i), q2_vec(i));
