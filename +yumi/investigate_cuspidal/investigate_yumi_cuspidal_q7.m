@@ -1,7 +1,7 @@
 
 kin_7 = define_yumi;
 
-kin = fwdkin_partial(kin_7, pi/3, 7);
+kin = fwdkin_partial(kin_7, 0, 7);
 kin.P = kin.P / 100; % fix scaling for det(J)
 
 [R, p] = fwdkin(kin, rand([6 1]));
@@ -79,8 +79,8 @@ end
 
 
 %% Path between 2 solns
-q_A = Q(:,idx_neg(1)); % [1.0639   -0.7255   -3.0816    1.9216   -1.9533   -1.1198]
-q_B = Q(:,idx_neg(3)); % [-0.2112   -2.3409    0.7570    1.9369    1.7178    0.6800]
+% q_A = Q(:,idx_neg(1)); % [1.0639   -0.7255   -3.0816    1.9216   -1.9533   -1.1198]
+% q_B = Q(:,idx_neg(3)); % [-0.2112   -2.3409    0.7570    1.9369    1.7178    0.6800]
 
 
 N = 100;
